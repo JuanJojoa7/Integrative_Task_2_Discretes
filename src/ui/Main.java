@@ -40,7 +40,7 @@ public class Main {
 
     public void printMenu(){
         System.out.print(
-            "\n<<<<< Bienvenido al sistema de embarque y desembarque >>>>>\n"+
+            "\n<<<<< Bienvenido al sistema de recomendacion de peliculas >>>>>\n"+
             "1. Ingreso de info de las peliculas\n"+
             "2. Iniciar recomendacion de peliculas\n"+
             "3. \n"+       
