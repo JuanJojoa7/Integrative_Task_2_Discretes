@@ -1,59 +1,58 @@
 package model;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-public class Controller {
+import java.util.*;
 
-    public static void main(String[] args) {
-        Map<String, Map<String, Integer>> graph = loadMoviesFromCSV("movies.csv");
-
-        String startMovie = "A"; // Película inicial
-        dijkstra(graph, startMovie);
+public class MovieGraph {
+    private Map<String, Map<String, Integer>> graph;
+    
+    public MovieGraph() {
+        graph = new HashMap<>();
     }
-
-    public static Map<String, Map<String, Integer>> loadMoviesFromCSV(String filename) {
-        Map<String, Map<String, Integer>> graph = new HashMap<>();
-
+    
+    public void loadMoviesFromCSV(String filename) {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-
-                String movie = parts[0];
-                String genre = parts[1];
-                String actor = parts[2];
-                String director = parts[3];
-
-                // Agregar la película al grafo
-                graph.put(movie, new HashMap<>());
-
-                // Asignar un peso (similitud) basado en la relevancia de género, actor y director
-                int weight = calculateWeight(genre, actor, director);
-
-                // Establecer la relación de género con el peso correspondiente
-                graph.get(movie).put(genre, weight);
+                String[] movieData = line.split(";");
+                String movieName = movieData[0];
+                String genre = movieData[1];
+                String actor = movieData[2];
+                String director = movieData[3];
+                
+                // Crear objeto Movie y agregarlo al grafo
+                Movie movie = new Movie(movieName, genre, actor, director);
+                addMovie(movie);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+    }
+    
+    public void addMovie(Movie movie) {
+        String movieName = movie.getName();
+        
+        
+        graph.put(movieName, new HashMap<>());
+        
+        for (String existingMovie : graph.keySet()) {
+            if (!existingMovie.equals(movieName) && graph.get(existingMovie).containsKey(movie.getGenre())) {
+                int weight = graph.get(existingMovie).get(movie.getGenre()) + 1;
+                graph.get(existingMovie).put(movieName, weight);
+                graph.get(movieName).put(existingMovie, weight);
+            }
+        }
+    }
+    
+    public Map<String, Map<String, Integer>> getGraph() {
         return graph;
     }
 
-    public static int calculateWeight(String genre, String actor, String director) {
-        
-        int genreWeight = 1;    // Peso del género (puede ser ajustado según la relevancia)
-        int actorWeight = 2;    // Peso del actor principal (puede ser ajustado según la relevancia)
-        int directorWeight = 3; // Peso del director principal (puede ser ajustado según la relevancia)
-
-        int weight = genreWeight + actorWeight + directorWeight;
-
-        return weight;
-    }
-
-    public static void dijkstra(Map<String, Map<String, Integer>> graph, String start) {
+    public void dijkstra(String start) {
         Map<String, Integer> distances = new HashMap<>();
         for (String movie : graph.keySet()) {
             distances.put(movie, Integer.MAX_VALUE);
