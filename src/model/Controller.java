@@ -6,6 +6,9 @@ import java.util.*;
 
 public class Controller {
 
+    private UsersMap users = new UsersMap();
+
+
     public static void main(String[] args) {
         Map<String, Map<String, Integer>> graph = loadMoviesFromCSV("movies.csv");
 
@@ -95,4 +98,32 @@ public class Controller {
             }
         }
     }
+
+    public String addNewUser (String name, String email, String password){
+        String message = "";
+        
+        User newUser = new User(name, email, password);
+        message = users.addUser(newUser);
+
+        return message;
+    }
+
+    public String logIn(String email, String password) {
+        User user = users.getUser(email);
+        String message = "";
+        
+        if (user != null && user.getPassword().equals(password)) {
+            message = "LogIn exitoso!";
+        } 
+        else if(user == null) {
+            message = "El email ingresado no corresponde a ningun usuario.";
+        }
+        else{
+            message = "Contraseña incorrecta.";
+        }
+
+        return message;
+    }
+
 }
+
