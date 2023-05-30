@@ -1,6 +1,7 @@
 package model;
 
 public class Movie {
+
     private String movieName;
     private String genre;
     private String actor;
@@ -12,6 +13,9 @@ public class Movie {
         this.actor = actor;
         this.director = director;
     }
+
+
+    
     
     // Getters y setters
     
@@ -21,6 +25,7 @@ public class Movie {
 
     public void setName(String movieName) {
         this.movieName = movieName;
+
     }
 
     public String getGenre() {
