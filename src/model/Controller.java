@@ -56,6 +56,34 @@ public class Controller {
         return weight;
     }
 
+    public String generateRecomendation(int movie){
+        String message = "";
+
+        Movie movieF = searchMovieByInt(movie);
+
+        if(movieF == null){
+            message = "Sorry, the movie is not available anymore, please go back to the menu and select a new one.";
+        }
+        else{
+            message = generateRecomandationByDijkstra(movieF);
+        }
+
+        return message;
+    }
+
+    public Movie searchMovieByInt(int movie){
+        Movie result = null;
+
+        return result;
+    }
+
+    public String generateRecomandationByDijkstra(Movie movie){
+        String result = "";
+
+
+        return result;
+    }
+
     public static void dijkstra(Map<String, Map<String, Integer>> graph, String start) {
         Map<String, Integer> distances = new HashMap<>();
         for (String movie : graph.keySet()) {
