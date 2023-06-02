@@ -17,8 +17,6 @@ public class Main {
 
         Main main = new Main();
 
-        main.txtReader();
-
         int option = -1;
         do{
             option = main.getOptionShowMenu();
@@ -108,12 +106,17 @@ public class Main {
                     "47. American Beauty\n"+
                     "48. Good Will Hunting\n"+
                     "49. The Pursuit of Happyness\n"+
-                    "50. La La Land\n");
+                    "50. La La Land\n"+
+                    "\n"+
+                    "Please write your selection: \n");
+
 
 
                 int movie = reader.nextInt();
 
-                String recomandation = controller.generateRecomendation(movie);
+                System.out.println("Your recommandation movies list is:\n");
+
+                String recomandation = controller.printRecomandation(movie);
 
                 System.out.println(recomandation);
 
@@ -145,13 +148,5 @@ public class Main {
         }
         return option;
     }
-
-    public void txtReader(){
-        System.out.println("Ingresa la direccion donde se encuentra la informacion de las peliculas");
-        String dir = reader.nextLine();
-        System.out.println("Cuantas peliculas van a ser: ");
-        int numMovies = reader.nextInt();
-    }
-
 
 }

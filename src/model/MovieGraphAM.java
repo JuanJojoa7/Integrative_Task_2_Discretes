@@ -3,6 +3,7 @@ import java.util.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.File;
 
 
 public class MovieGraphAM {
@@ -17,14 +18,17 @@ public class MovieGraphAM {
     }
 
     public void loadMoviesFromCSV(String filename) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+
+        File file = new File(filename);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] movieData = line.split(";");
                 String movieName = movieData[0];
-                String genre = movieData[1];
-                String actor = movieData[2];
-                String director = movieData[3];
+                String genre = movieData[3];
+                String actor = movieData[1];
+                String director = movieData[2];
 
                 // Crear objeto Movie y agregarlo a la lista
                 Movie movie = new Movie(movieName, genre, actor, director);
@@ -34,7 +38,7 @@ public class MovieGraphAM {
                 int newIndex = movies.size() - 1;
                 int[][] newMatrix = new int[newIndex + 1][newIndex + 1];
                 for (int i = 0; i < newIndex; i++) {
-                    for (int j = 0; j <= newIndex; j++) {
+                    for (int j = 0; j < newIndex; j++) {
                         newMatrix[i][j] = adjacencyMatrix[i][j];
                     }
                 }
@@ -50,7 +54,6 @@ public class MovieGraphAM {
     }
 
     private void updateSimilarities(Movie movie) {
-
 
         int movieIndex = movieIndices.get(movie.getName());
 
@@ -88,6 +91,57 @@ public class MovieGraphAM {
         return weight;
     }
 
+
+    public List<Movie> dijkstraUno(String movieToRefer) {
+        int numMovies = movies.size();
+        if(movieToRefer != null){
+        }
+    
+        int startMovieIndex = movieIndices.get(movieToRefer);
+        int[] distances = new int[numMovies];
+        boolean[] visited = new boolean[numMovies];
+        Movie[] parents = new Movie[numMovies];
+    
+        Arrays.fill(distances, Integer.MAX_VALUE);
+        Arrays.fill(visited, false);
+    
+        distances[startMovieIndex] = 0;
+    
+        int minDistance = Integer.MAX_VALUE;
+        int minIndex = -1;
+
+        for (int i = 0; i < numMovies - 1; i++) {
+    
+            for (int j = 0; j < numMovies; j++) {
+                if (!visited[j] && distances[j] < minDistance) {
+                    minDistance = distances[j];
+                    minIndex = j;
+                }
+            }
+    
+            visited[minIndex] = true;
+    
+            for (int j = 0; j < numMovies; j++) {
+                if (!visited[j] && adjacencyMatrix[minIndex][j] != 0 &&
+                        distances[minIndex] != Integer.MAX_VALUE &&
+                        distances[minIndex] + adjacencyMatrix[minIndex][j] < distances[j]) {
+                    distances[j] = distances[minIndex] + adjacencyMatrix[minIndex][j];
+                    parents[j] = movies.get(minIndex);
+                }
+            }
+        }
+    
+        List<Movie> recommendedMovies = new ArrayList<>();
+        for (int i = 0; i < numMovies; i++) {
+            if (i != startMovieIndex) {
+                recommendedMovies.add(movies.get(i));
+            }
+        }
+    
+        return recommendedMovies;
+    }
+    
+
     public List<Movie> dijkstra(String startMovie) {
         int startMovieIndex = movieIndices.get(startMovie);
 
@@ -101,9 +155,11 @@ public class MovieGraphAM {
 
         distances[startMovieIndex] = 0;
 
+        int minDistance = Integer.MAX_VALUE;
+        int minIndex = -1;
+        
         for (int i = 0; i < numMovies - 1; i++) {
-            int minDistance = Integer.MAX_VALUE;
-            int minIndex = -1;
+   
 
             for (int j = 0; j < numMovies; j++) {
                 if (!visited[j] && distances[j] < minDistance) {

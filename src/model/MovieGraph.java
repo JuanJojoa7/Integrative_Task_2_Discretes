@@ -18,9 +18,9 @@ public class MovieGraph {
             while ((line = br.readLine()) != null) {
                 String[] movieData = line.split(";");
                 String movieName = movieData[0];
-                String genre = movieData[1];
-                String actor = movieData[2];
-                String director = movieData[3];
+                String genre = movieData[3];
+                String actor = movieData[1];
+                String director = movieData[2];
                 
                 // Crear objeto Movie y agregarlo al grafo
                 Movie movie = new Movie(movieName, genre, actor, director);
