@@ -90,11 +90,13 @@ public class MovieGraphAM {
     
         return weight;
     }
-
-
-    public List<Movie> dijkstraUno(String movieToRefer) {
+    
+    public List<Movie> dijkstra(String movieToRefer) {
         int numMovies = movies.size();
-        if(movieToRefer != null){
+        List<Movie> recommendedMovies = new ArrayList<>();
+    
+        if (movieToRefer == null || !movieIndices.containsKey(movieToRefer)) {
+            return recommendedMovies;
         }
     
         int startMovieIndex = movieIndices.get(movieToRefer);
@@ -109,7 +111,7 @@ public class MovieGraphAM {
     
         int minDistance = Integer.MAX_VALUE;
         int minIndex = -1;
-
+    
         for (int i = 0; i < numMovies - 1; i++) {
     
             for (int j = 0; j < numMovies; j++) {
@@ -119,76 +121,38 @@ public class MovieGraphAM {
                 }
             }
     
+            if (minIndex == -1) {
+                break;
+            }
+    
             visited[minIndex] = true;
     
-            for (int j = 0; j < numMovies; j++) {
-                if (!visited[j] && adjacencyMatrix[minIndex][j] != 0 &&
+            for (int k = 0; k < numMovies; k++) {
+                if (!visited[k] && adjacencyMatrix[minIndex][k] != 0 &&
                         distances[minIndex] != Integer.MAX_VALUE &&
-                        distances[minIndex] + adjacencyMatrix[minIndex][j] < distances[j]) {
-                    distances[j] = distances[minIndex] + adjacencyMatrix[minIndex][j];
-                    parents[j] = movies.get(minIndex);
+                        distances[minIndex] + adjacencyMatrix[minIndex][k] < distances[k]) {
+                    distances[k] = distances[minIndex] + adjacencyMatrix[minIndex][k];
+                    parents[k] = movies.get(minIndex);
                 }
             }
         }
     
-        List<Movie> recommendedMovies = new ArrayList<>();
+        List<Movie> similarMovies = new ArrayList<>();
         for (int i = 0; i < numMovies; i++) {
-            if (i != startMovieIndex) {
-                recommendedMovies.add(movies.get(i));
+            if (i != startMovieIndex && distances[i] != Integer.MAX_VALUE) {
+                similarMovies.add(movies.get(i));
             }
         }
+    
+        similarMovies.sort(Comparator.comparingInt(m -> -distances[movieIndices.get(m.getName())]));
+    
+        recommendedMovies = similarMovies.subList(0, Math.min(similarMovies.size(), 10));
     
         return recommendedMovies;
     }
     
+    
 
-    public List<Movie> dijkstra(String startMovie) {
-        int startMovieIndex = movieIndices.get(startMovie);
-
-        int numMovies = movies.size();
-        int[] distances = new int[numMovies];
-        boolean[] visited = new boolean[numMovies];
-        Movie[] parents = new Movie[numMovies];
-
-        Arrays.fill(distances, Integer.MAX_VALUE);
-        Arrays.fill(visited, false);
-
-        distances[startMovieIndex] = 0;
-
-        int minDistance = Integer.MAX_VALUE;
-        int minIndex = -1;
-        
-        for (int i = 0; i < numMovies - 1; i++) {
-   
-
-            for (int j = 0; j < numMovies; j++) {
-                if (!visited[j] && distances[j] < minDistance) {
-                    minDistance = distances[j];
-                    minIndex = j;
-                }
-            }
-
-            visited[minIndex] = true;
-
-            for (int j = 0; j < numMovies; j++) {
-                if (!visited[j] && adjacencyMatrix[minIndex][j] != 0 &&
-                        distances[minIndex] != Integer.MAX_VALUE &&
-                        distances[minIndex] + adjacencyMatrix[minIndex][j] < distances[j]) {
-                    distances[j] = distances[minIndex] + adjacencyMatrix[minIndex][j];
-                    parents[j] = movies.get(minIndex);
-                }
-            }
-        }
-
-        List<Movie> recommendedMovies = new ArrayList<>();
-        for (int i = 0; i < numMovies; i++) {
-            if (i != startMovieIndex) {
-                recommendedMovies.add(movies.get(i));
-            }
-        }
-
-        return recommendedMovies;
-    }
 
     public List<Movie> floydWarshall() {
         int numMovies = movies.size();
